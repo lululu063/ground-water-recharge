@@ -1,140 +1,162 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>3D Pervious Concrete Model</title>
+<title>Pervious Concrete Demo</title>
+
 <style>
-body { margin: 0; overflow: hidden; }
-canvas { display: block; }
+body {
+  font-family: Arial;
+  margin: 0;
+  background: #f4f6f8;
+}
+
+/* HEADER */
+header {
+  background: darkblue;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+/* SECTION */
+.section {
+  padding: 40px;
+  text-align: center;
+}
+
+/* IMAGE */
+img {
+  width: 60%;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+/* FLOW ARROW */
+.arrow {
+  font-size: 40px;
+  color: blue;
+  margin: 20px;
+}
+
+/* LAYER BOX */
+.layers {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.layer-box {
+  width: 200px;
+  margin: 10px;
+  border: 2px solid black;
+}
+
+.layer {
+  padding: 15px;
+  color: white;
+  font-weight: bold;
+}
+
+/* LAYERS COLORS */
+.top { background: #999; }
+.mid { background: #777; }
+.sand { background: #c2a679; }
+.soil { background: #5a3e2b; }
+
+/* WATER ANIMATION */
+.water {
+  width: 10px;
+  height: 0;
+  background: blue;
+  margin: auto;
+  animation: flow 3s infinite;
+}
+
+@keyframes flow {
+  0% { height: 0; }
+  100% { height: 200px; }
+}
+
+/* INFILTRATION TEXT */
+.highlight {
+  color: green;
+  font-weight: bold;
+}
+
 </style>
 </head>
 
 <body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<header>
+<h1>Pervious Concrete for Groundwater Recharge</h1>
+<p>Setbacks & Parking → Infiltration → Recharge</p>
+</header>
 
-<script>
+<!-- SECTION 1 -->
+<div class="section">
 
-// Scene
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf0f0f0);
+<h2>1. Site Layout (Setbacks & Building)</h2>
 
-// Camera
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-camera.position.set(8, 8, 12);
+<p>
+Concrete replaces natural soil in urban areas.  
+But setbacks can be used as <span class="highlight">infiltration zones</span>.
+</p>
 
-// Renderer
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+<img src="setback.png">
 
-// Light
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(10, 10, 10);
-scene.add(light);
+<div class="arrow">⬇️</div>
 
-// Base Plot
-const plotGeometry = new THREE.BoxGeometry(12, 0.5, 8);
-const plotMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
-const plot = new THREE.Mesh(plotGeometry, plotMaterial);
-scene.add(plot);
+<p><b>Water flows from building & surfaces into setback areas</b></p>
 
-// Building (impervious)
-const building = new THREE.Mesh(
-  new THREE.BoxGeometry(5, 2, 3),
-  new THREE.MeshStandardMaterial({ color: 0x777777 })
-);
-building.position.set(1, 1.25, 0);
-scene.add(building);
+</div>
 
-// Parking (pervious)
-const parking = new THREE.Mesh(
-  new THREE.BoxGeometry(3, 0.3, 3),
-  new THREE.MeshStandardMaterial({ color: 0x66ccff })
-);
-parking.position.set(-3, 0.4, -1);
-scene.add(parking);
+<!-- SECTION 2 -->
+<div class="section">
 
-// Driveway (pervious)
-const driveway = new THREE.Mesh(
-  new THREE.BoxGeometry(3, 0.3, 2),
-  new THREE.MeshStandardMaterial({ color: 0x66ccff })
-);
-driveway.position.set(-3, 0.4, -3);
-scene.add(driveway);
+<h2>2. Pervious Concrete Layers</h2>
 
-// Setbacks (green infiltration zones)
-function createSetback(x, z, w, d) {
-  const s = new THREE.Mesh(
-    new THREE.BoxGeometry(w, 0.2, d),
-    new THREE.MeshStandardMaterial({ color: 0x88cc88 })
-  );
-  s.position.set(x, 0.2, z);
-  scene.add(s);
-}
+<img src="layers.png">
 
-// front, rear, left, right
-createSetback(0, 3.5, 12, 1);
-createSetback(0, -3.5, 12, 1);
-createSetback(-5.5, 0, 1, 8);
-createSetback(5.5, 0, 1, 8);
+<div class="layers">
 
-// Road
-const road = new THREE.Mesh(
-  new THREE.BoxGeometry(12, 0.2, 2),
-  new THREE.MeshStandardMaterial({ color: 0x333333 })
-);
-road.position.set(0, 0.1, -5);
-scene.add(road);
+<div class="layer-box">
+<div class="layer top">Pervious Concrete</div>
+<div class="layer mid">Gravel Layer</div>
+<div class="layer sand">Sand Layer</div>
+<div class="layer soil">Natural Soil</div>
+</div>
 
-// Water arrows (infiltration)
-function createArrow(x, z) {
-  const arrow = new THREE.ArrowHelper(
-    new THREE.Vector3(0, -1, 0),
-    new THREE.Vector3(x, 2, z),
-    1.5,
-    0x0000ff
-  );
-  scene.add(arrow);
-}
+</div>
 
-// arrows in parking + setbacks
-createArrow(-3, -1);
-createArrow(-3, -3);
-createArrow(0, 3);
-createArrow(3, 3);
-createArrow(-5, 0);
-createArrow(5, 0);
+</div>
 
-// Controls (rotation using mouse)
-let isDragging = false;
-let prevMouseX = 0;
+<!-- SECTION 3 -->
+<div class="section">
 
-document.addEventListener("mousedown", e => {
-  isDragging = true;
-  prevMouseX = e.clientX;
-});
+<h2>3. Water Infiltration Process</h2>
 
-document.addEventListener("mouseup", () => {
-  isDragging = false;
-});
+<p>
+Water enters through <span class="highlight">setbacks & parking</span>  
+and moves downward into groundwater.
+</p>
 
-document.addEventListener("mousemove", e => {
-  if (isDragging) {
-    const delta = e.clientX - prevMouseX;
-    scene.rotation.y += delta * 0.01;
-    prevMouseX = e.clientX;
-  }
-});
+<!-- WATER FLOW -->
+<div class="water"></div>
 
-// Animate
-function animate() {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-}
+<p class="highlight">↓ Infiltration to Groundwater ↓</p>
 
-animate();
+</div>
 
-</script>
+<!-- SECTION 4 -->
+<div class="section">
+
+<h2>4. Comparison</h2>
+
+<p><b>Normal Concrete:</b> Runoff ↑ | Recharge ❌</p>
+<p><b>Pervious Concrete:</b> Infiltration ↓ | Recharge ✔</p>
+
+</div>
 
 </body>
 </html>
